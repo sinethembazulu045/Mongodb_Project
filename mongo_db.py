@@ -2,58 +2,74 @@ import datetime
 import pymongo
 from pymongo import MongoClient
 from mongoengine import *
+import os
+from os import environ
+from visit_data import myFeildList
 
-#establishing a connection 
+MONGO_HOST = os.getenv("host")
 
-client = MongoClient('localhost', 27017)
+#establishing a connection
+client = MongoClient(MONGO_HOST, 27017)
 client = MongoClient('mongodb://root:pass@localhost:27017')
-connect('mongoengine_UmuziProspects', host='localhost', port=27017)
+connect('mongoengine_UmuziProspects', MONGO_HOST, port=27017)
 
 #Accessing database
 db = client['UmuziProspects'] #creating database named "UmuziProspects"
 my_collectection = db['Visitor'] #creating collection inside database "UmuziProspect"
 
-myFeildList = [
-  {"visitor_name": "Sfiso", "visitors_age": 28, "date of visit": "2020-11-3","time of visit": "11:00 am", "assistance_name": "Sindisiw", "comments": "She knew her job"},
-  {"visitor_name": "Nkosikhona", "visitors_age": 32, "date of visit": "2020-18-6", "time of visit": "13:00 pm", "assistance_name": "Fanakhe", "comments": "She was open, someone who is easy to talk to"},
-  {"visitor_name": "Skara", "visitors_age": 36, "date of visit": "2020-14-5", "time of visit": "14:00 pm","assistance_name": "Mazethi","comments": "Helful"},
-]
+ #fucnctionality class with its functions
 
-        ###### fucnctionality functions
+class Visitor():
+    
+    def __init__(self, visit_data):
+        self.visit_data = visit_data
+
+    def create_visitor(self): #Saving a visitor into UmuziProspects database
+      try:
+        create_visitor = my_collectection.insert_many(self.visit_data)  #inserting multiple records 
+      except TypeError:
+        return "visitor not created"
+      return "visitor created"
+      
+    def delete_visitor(self,person_to_delete): # this function only deletes one document where Visitor_name is "Skara"
+      try:
+        delete_visitor = my_collectection.delete_one(person_to_delete)
+      except TypeError:
+        return "document not deleted"
+      return "document deleted"
+      
+  # Deletting  all documents in Visitor
+
+  
+    def delete_many(self): # this function only deletes many document 
+      try:
+        delete_many = my_collectection.delete_many(self.visit_data)
+      except TypeError:
+        return "documents not deleted"
+      return "all document deleted"
+      
+
+  # # #Updating one collection function
+
+    def update_visitor(self,visitor_to_update, new_info): 
+      try:
+        update_visitor = my_collectection.update_one(visitor_to_update, new_info)
+      except TypeError:
+        return "visitor not updated"
+      return "visitor updated"
+  #   #print(delete_Visitor(person_to_update,new_info))
+
+    def display_all_info(self):
+      for my_data in my_collectection.find():
+        return my_data
 
 
-#Saving a visitor into UmuziProspects database
 
-def create_visitor(*args): 
-  result = my_collectection.insert_many(myFeildList)
-  return result
-
-#print(create_visitor(my_collectection))
-
-# Deletting one document
-
-def delete_Visitor(*args): # this function only deletes one document where Visitor_name is "Skara"
-  myquery = { "Visitor_name": "Skara" }
-  my_collectection.delete_one(myquery)
-  for result in mycol.find():
-    return result
-
-# Deletting  all documents in Visitor
-
-def delete_all(*args): # this function Deletes all documents in the "Visitor" collection
-  result = my_collectection.delete_many({})
-  return result.deleted_count, " documents deleted."
-
-#Updating one collection function
-
-def update_Visitor(*args): 
-    my_query = { "visitor_name": "Sfiso"}
-    new_values = { "$set": { "vistor_name": "Philani" } }
-    my_collectection.update_one(my_query, new_values)
-    for result in my_collectection.find(): # print "Visitors" after the update
-         return result
-
-#Updating many collection
-
-
-
+#print(show_all_info(my_collectection))
+# visitor_one = Visitor()
+# print(visitor_one.create_visitor())
+# visitor_two =Visitor(myFeildList)
+# person_to_delete = {"visitor_name": "Skara"}
+# print(visitor_two.delete_Visitor(person_to_delete))
+visitor = Visitor(myFeildList)
+print(visitor.display_all_info())

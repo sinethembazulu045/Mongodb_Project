@@ -1,0 +1,8 @@
+{
+  "test.py::Testing_functions": true, 
+  "test.py::Testing_functions::test_delete_many": true, 
+  "test.py::Testing_functions::test_deleted_visitor": true, 
+  "test.py::Testing_functions::test_show_all_info": true, 
+  "test.py::Testing_functions::test_visitor_deleted": true, 
+  "test.py::test_delete_many": true
+}
